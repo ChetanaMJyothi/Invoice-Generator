@@ -1,0 +1,128 @@
+<html>
+<head>
+<title>
+    Welcome to Invoice generator
+</title>
+<link rel="stylesheet" href="second.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+
+<script src=https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js></script>    
+</head>
+
+<body>
+<section id="banner">
+    
+    <div class="banner-text">
+        <h1>Invoice Generator</h1>
+    </div>
+
+    
+<input type="file" class="upload-box" id="myFile" multiple size="50" onchange="myFunction()">
+    <p id="demo"></p>
+        
+<script type="text/javascript">
+    function myFunction() {
+        var flag=true;
+        var fileUpload = document.getElementById("myFile");
+        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (FileReader) != "undefined") {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var table = document.createElement("table");
+                    var rows = e.target.result.split("\n");
+                    var k=0;
+                    var c=0;
+                    for (var i = 0; i < rows.length; i++) {
+                        var cells = rows[i].split(",");
+                        if (cells.length > 1) {
+                            var row = table.insertRow(-1);
+                            for (var j = 0; j < cells.length; j++) {
+                                if(!cells[0].localeCompare('H')){
+                                if(j==2 ){
+                                var row=table.insertRow(-1);
+                                var headerCell = document.createElement("th");
+                                headerCell.innerHTML = "Invoice Number : "+cells[j];
+                                row.appendChild(headerCell);
+                                var headerCell = document.createElement("th");
+                                headerCell.innerHTML = " ";
+                                row.appendChild(headerCell);
+                                }
+                                if(j==3){
+                                var row=table.insertRow(-1);
+                                var headerCell = document.createElement("th");
+                                headerCell.innerHTML = "Invoice Date : "+cells[j];
+                                row.appendChild(headerCell);
+                                var headerCell = document.createElement("th");
+                                headerCell.innerHTML = " ";
+                                row.appendChild(headerCell);
+                                }
+                                }
+                                if(!cells[0].localeCompare('T')){
+                                    if(flag==true){
+                                    var row=table.insertRow(-1);
+                                    var headerCell = document.createElement("th");
+                                    headerCell.innerHTML ="Product Name  ";
+                                    row.appendChild(headerCell);
+                                    var headerCell = document.createElement("th");
+                                    headerCell.innerHTML = "Quantity  ";
+                                    row.appendChild(headerCell);
+                                    flag=false;
+                                }
+                                    if(j==5){
+                                    var row=table.insertRow(-1);    
+                                    var cell = row.insertCell(-1);
+                                    cell.innerHTML = cells[j]+cells[j+1];}
+                                    if(j==14){
+                                    var cell = row.insertCell(-1);
+                                    k=cell.innerHTML = cells[j]*cells[20]; 
+                                    c=c+k;
+                                    }
+                                }
+                                }
+                            }
+                        }
+                    var row=table.insertRow(-1);
+                    var headerCell = document.createElement("th");
+                    headerCell.innerHTML= "Total Value= "+c;
+                    row.appendChild(headerCell);
+                    var headerCell = document.createElement("th");
+                    headerCell.innerHTML = " ";
+                    row.appendChild(headerCell);
+                    var dvCSV = document.getElementById("dvCSV");
+                    dvCSV.innerHTML = "";
+                    document.getElementById("dvCSV").innerHTML="<span class='Invoice'>Invoice :<br/></span>";
+                    dvCSV.appendChild(table);
+                    var x = document.createElement("BUTTON");
+                    var t = document.createTextNode("Download PDF");
+                     x.setAttribute('ID','btn');
+                    x.appendChild(t);
+                    document.body.appendChild(x);
+                         window.onclick=function(){
+                             document.getElementById("btn")
+                                 .addEventListener("click", () => {
+                                 const invoice = this.document.getElementById("dvCSV");
+                                 console.log(invoice);
+                                 console.log(window);
+                                 var opt = {
+                                margin: 1,
+                                     filename: 'Invoice.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                                     html2canvas: { scale: 2 },
+                                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(invoice).set(opt).save();
+        })
+} 
+                }
+                reader.readAsText(fileUpload.files[0]);
+            } 
+        } 
+             
+    }
+</script> 
+<div id="dvCSV" class="content-table"></div>
+</section>
+    <br>
+</body>
+</html>
